@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using NZWalks.API.CustomActionFilters;
 using NZWalks.API.Models.Domain;
 using NZWalks.API.Models.DTO;
 using NZWalks.API.Repositories;
@@ -28,17 +29,20 @@ namespace NZWalks.API.Controllers
         //Create Walk
         //POST: /api/walks
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddWalkRequestDTO addWalkRequestDTO)
         {
-            //Map the DTO to DM
-            var walkDomainModel = _mapper.Map<Walk>(addWalkRequestDTO);
+           
+                //Map the DTO to DM
+                var walkDomainModel = _mapper.Map<Walk>(addWalkRequestDTO);
 
-            await _walkRepository.CreateAsync(walkDomainModel);
+                await _walkRepository.CreateAsync(walkDomainModel);
 
-            //Map DM to DTO
-            var walkDTO = _mapper.Map<Walk>(walkDomainModel);
+                //Map DM to DTO
+                var walkDTO = _mapper.Map<Walk>(walkDomainModel);
 
-            return Ok(walkDTO);
+                return Ok(walkDTO);
+            
 
         }
 
@@ -72,15 +76,18 @@ namespace NZWalks.API.Controllers
         //PUT: /api/walks/{id}
         [HttpPut]
         [Route("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> Update([FromRoute] Guid id, UpdateWalkRequestDTO updateWalkRequestDTO)
         {
-            var walkDomainModel = _mapper.Map<Walk>(updateWalkRequestDTO);
             
-            walkDomainModel = await _walkRepository.UpdateAsync(id, walkDomainModel);
-            if (walkDomainModel == null)
-                return NotFound();
-            var walkDTO = _mapper.Map<WalkDTO>(walkDomainModel);
-            return Ok(walkDTO);
+                var walkDomainModel = _mapper.Map<Walk>(updateWalkRequestDTO);
+
+                walkDomainModel = await _walkRepository.UpdateAsync(id, walkDomainModel);
+                if (walkDomainModel == null)
+                    return NotFound();
+                var walkDTO = _mapper.Map<WalkDTO>(walkDomainModel);
+                return Ok(walkDTO);
+            
 
         }
 
