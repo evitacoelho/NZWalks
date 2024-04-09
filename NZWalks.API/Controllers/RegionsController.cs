@@ -109,7 +109,7 @@ namespace NZWalks.API.Controllers
 
         //Action method to update a region
         //PUT: //https://localhost:portnumber/api/regions {id}
-        [HttpPost]
+        [HttpPut]
         [Route("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDTO updateRegionRequestDTO)
         {
