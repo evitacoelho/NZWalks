@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace NZWalks.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+  
     public class RegionsController : ControllerBase
     {
         private NZWalksDbContext _dbContext;
@@ -31,6 +33,7 @@ namespace NZWalks.API.Controllers
         //All Async methods return a <Task> type - wraps the result in Task
         //All calls made by an async method have to implement await
         [HttpGet]
+        [Authorize (Roles = "Reader")]
         public async Task<IActionResult> GetAll()
         {
             //DbContext - bridge between controller and DB
@@ -68,6 +71,7 @@ namespace NZWalks.API.Controllers
         //FromRoute indicates the id is taken from the URL route
         [HttpGet]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Reader")]
         public async Task<IActionResult>  GetById([FromRoute] Guid id)
         {
             
@@ -91,6 +95,7 @@ namespace NZWalks.API.Controllers
         //comes from the addrequest dto 
         [HttpPost]
         [ValidateModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDTO addRegionRequestDTO)
         {
            
@@ -116,6 +121,7 @@ namespace NZWalks.API.Controllers
         [HttpPut]
         [Route("{id:Guid}")]
         [ValidateModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDTO updateRegionRequestDTO)
         {
                 //extract the record from the domain model from the id passed - done in repo
@@ -143,6 +149,7 @@ namespace NZWalks.API.Controllers
         //DELETE: //https://localhost:portnumber/api/regions {id}
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             //Find region with matching Id

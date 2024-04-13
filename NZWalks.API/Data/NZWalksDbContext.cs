@@ -7,7 +7,8 @@ namespace NZWalks.API.Data
     {
         // this is used by the controllers to talk to the DB
         //pass the db context options to the base class
-        public NZWalksDbContext(DbContextOptions dbContextOptions) : base (dbContextOptions)
+        //when using multiple DbContext provide the Context of each DbContext
+        public NZWalksDbContext(DbContextOptions <NZWalksDbContext> dbContextOptions) : base (dbContextOptions)
         {
             
         }
