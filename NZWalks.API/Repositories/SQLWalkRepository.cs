@@ -21,10 +21,38 @@ namespace NZWalks.API.Repositories
         }
 
        
-        public async Task<List<Walk>> GetAllAsync()
+        public async Task<List<Walk>> GetAllAsync(string? filterOn=null, string? filterQuery=null, string? 
+            sortBy=null, bool isAscending=true, int pageNumber = 1, int pageSize = 100)
         {
+            //get walks based on filtering and querying
+            var walks = _dbContext.Walks.Include("Difficulty").Include("Region").AsQueryable();
+
+            //filtering based on query -Name
+            if(string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterQuery) == false )
+            { 
+                //filter based on name ignoring case (query parameter is a subset of name)
+                if(filterOn.Equals("Name", StringComparison.OrdinalIgnoreCase) )
+                    walks = walks.Where(x => x.Name.Contains(filterQuery));
+            }
+
+            //sorting based on name or length
+            if (string.IsNullOrWhiteSpace(sortBy) == false)
+            {
+                //sorting based on name
+                if (sortBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                    walks = isAscending ? walks.OrderBy(x => x.Name) : walks.OrderByDescending(x => x.Name);
+                else
+                //sorting based on length
+                if (sortBy.Equals("Length", StringComparison.OrdinalIgnoreCase))
+                    walks = isAscending ? walks.OrderBy(x => x.LengthInKm) : walks.OrderByDescending(x => x.LengthInKm);
+            }
+
+            //pagination - based on skip and take 
+            var skipResults = (pageNumber - 1) * pageSize;
+
+            return await walks.Skip(skipResults).Take(pageSize).ToListAsync();   
             //include - includes navigation props from related models as needed
-            return await _dbContext.Walks.Include("Difficulty").Include("Region").ToListAsync();
+            //return await _dbContext.Walks.Include("Difficulty").Include("Region").ToListAsync();
         }
 
         public async Task<Walk?> GetByIdAsync(Guid id)
